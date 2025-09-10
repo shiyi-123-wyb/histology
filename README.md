@@ -30,3 +30,4 @@ python run.py --pretrain ResNet50_ImageNet --dataset TCGA-RCC --gpu_id 0 --lr 1e
     --pretrain_dir experiments/R10/Res50/init_xaiver/label_frac=1.0/model=v4_degree=12/lr=0.0003_maskratio=0.1/ckpts/ \
     --mask_ratio 0.1  --degree 12 --lwc mbv4t --distill_loss l1 --use_random_inst False
 ```
+Updated on 2025年 09月 10日 星期三 21:43:57 CST
