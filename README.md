@@ -2,39 +2,40 @@
 # HDMIL
 The official implementation of "Fast and Accurate Gigapixel Pathological Image Classification with Hierarchical Distillation Multi-Instance Learning"
 
-## training & validation & testing
-### for Binary Classification Tasks
-#### step1: DMIN
+## training &  testing
+#### step1: CLUSTER/DeepCluster-main
 ```shell
-python run.py --pretrain ResNet50_ImageNet --dataset Camelyon16 --gpu_id 0 --lr 3e-4 --fold 10 \
-    --label_frac 1.00 --degree 12 --init_type xaiver --model v4 --mask_ratio 0.1  
+python sy_train.py \
+    --input_path /media/joyivan/2/sy/private/TREDENT/20x_256px_0px_overlap/patches_x20 \
+    --output_path /media/joyivan/2/sy/private/TREDENT/20x_256px_0px_overlap/outputss \
+    --batch_size 128 \
+    --dim_reduce 256 \
+    --distance_groups 5 \
+    --sample_percentage 0.20 \
+    --gpu_ids "0" \
+    --test_mode True \
+    --batch_size_wsi 10
+   
 ```
-#### step2: LIPN
+#### step2: CLUSTER/DeepCluster-main
 ```shell
-python run.py --pretrain ResNet50_ImageNet --dataset Camelyon16 --gpu_id 0 --lr 1e-4 --fold 10 \
-    --label_frac 1.00 --init_type xaiver --model v5  \
-    --pretrain_dir experiments/C10/Res50/init_xaiver/label_frac=1.0/model=v4_degree=12/lr=0.0003_maskratio=0.1/ckpts/ \
-    --mask_ratio 0.1  --degree 12 --lwc mbv4t --distill_loss l1 --use_random_inst False 
+python global_cluster_lsc_pca.py \
+    --num_global_clusters 24 \
+    --pca_dim 32 \
+    --p_landmarks 128 \
+    --r_neighbors 5 
 ```
 
 
 ### for Multiple Classification Tasks
-#### step1: DMIN
+#### step1: CLUSTER
 ```shell
-python run.py --pretrain ResNet50_ImageNet --dataset TCGA-RCC --gpu_id 0 --lr 3e-4 --fold 10 \
-    --label_frac 1.00 --degree 12 --init_type xaiver --model v4 --mask_ratio 0.1
+python baseline.py --pretrain ResNet50_ImageNet --dataset CustomDataset --gpu_id 0 --lr 1e-5 --fold 10 \
+    --label_frac 1.0  --n_epochs 100 --wd 1e-5 
 ```
-#### step2: LIPN
-```shell
-python run.py --pretrain ResNet50_ImageNet --dataset TCGA-RCC --gpu_id 0 --lr 1e-4 --fold 10 \
-    --label_frac 1.00 --init_type xaiver --model v5  \
-    --pretrain_dir experiments/R10/Res50/init_xaiver/label_frac=1.0/model=v4_degree=12/lr=0.0003_maskratio=0.1/ckpts/ \
-    --mask_ratio 0.1  --degree 12 --lwc mbv4t --distill_loss l1 --use_random_inst False
-```
+
 Updated on 2025年 09月 10日 星期三 21:43:57 CST
 
-# histology
-Multimodal Multi-Instance Analysis of the Relationship between Gene Mutations and Lymph Node Metastasis in Pathology
 
 
 #省人民医院的数据（结直肠癌）
