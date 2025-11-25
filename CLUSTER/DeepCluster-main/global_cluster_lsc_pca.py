@@ -18,7 +18,7 @@ def parse_args():
         description="Global clustering: PCA→32 + Landmark-based Spectral Clustering (LSC)"
     )
 
-    # 你的 per-WSI 特征 & cluster_assignments.csv 所在的根目录
+    #  per-WSI 特征 & cluster_assignments.csv 所在的根目录
     parser.add_argument(
         "--root_dir",
         type=str,
