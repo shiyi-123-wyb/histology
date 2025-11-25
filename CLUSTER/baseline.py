@@ -14,8 +14,8 @@ def parse_args_and_save():
 
     parser.add_argument("--phase", type=str, default='train', choices=['train', 'test'])
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--fold", type=int, default=10)   # 总共多少折
-    parser.add_argument("--k", type=int, default=8)       # 当前第几折
+    parser.add_argument("--fold", type=int, default=10)   
+    parser.add_argument("--k", type=int, default=8)       
     parser.add_argument("--feature_dim", type=int, default=1536)
     parser.add_argument("--label_frac", type=float, default=1.0)
     parser.add_argument("--dataset", type=str, default="CustomDataset",
@@ -25,7 +25,6 @@ def parse_args_and_save():
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--wd", type=float, default=1e-5)
 
-    # ==== 正则化相关新参数 ====
     parser.add_argument("--label_smoothing", type=float, default=0.05,
                         help="CE 的 label smoothing 系数，0 表示关闭")
     parser.add_argument("--slide_dropout", type=float, default=0.2,
@@ -33,7 +32,6 @@ def parse_args_and_save():
     parser.add_argument("--max_patches_per_cluster", type=int, default=300,
                         help="每个簇最多使用的 patch 数，<=0 表示不限制")
 
-    # ==== 簇相关参数 ====
     parser.add_argument("--num_clusters", type=int, default=24,
                         help="全局聚类得到的 cluster 数 K_global")
 
@@ -49,7 +47,6 @@ def parse_args_and_save():
 
 
 def init_args(args):
-    # 用 GPU，如果有的话
     args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     if args.dataset == 'Camelyon16':
@@ -77,12 +74,10 @@ def init_args(args):
         args.split_dir = '/user_name/02.data/02.processed_data/TCGA-RCC/splits/'
 
     elif args.dataset == 'CustomDataset':
-        # 你的结直肠数据
         args.n_classes, args.subtyping, args.k_sample, args.n_groups = 2, False, 16, 4
         args.feature_dir = '/media/joyivan/2/sy/private/TREDENT/20x_256px_0px_overlap/features_uni_v2/'
         args.label_csv = '/media/joyivan/2/sy/private/labels/GenLyOs_labels.csv'
         args.split_dir = '/media/joyivan/2/sy/private/CLAM/10kfold/'
-        # 确保 coord_pkl_path 正确
         args.coord_pkl_path = "/media/joyivan/2/sy/private/TREDENT/20x_256px_0px_overlap/outputss/global_clustering_results/coord_to_global_cluster.pkl"
 
     else:
@@ -126,8 +121,6 @@ def make_expdir_and_logs(args):
     pretrain = {
         'ResNet50_ImageNet': 'Res50'
     }
-
-    # 实验路径干净一点，只保留真正有用的超参
     exp_dir = os.path.join(
         './experiments/{}{}/{}/label_frac={}/ls={}_sd={}_mppc={}_nc={}_lr={}'.format(
             dataset[args.dataset],
