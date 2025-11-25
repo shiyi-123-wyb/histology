@@ -18,10 +18,6 @@ sys.path.append('..')
 
 
 class WSIDataset(Dataset):
-    """
-    Cluster-aware WSI bag dataset.
-    每个 bag: 所有 patch feature + 对应的 global_cluster_id
-    """
 
     def __init__(self, args, wsi_labels, infold_cases, phase=None, target_cluster=None):
         self.args = args
@@ -109,10 +105,6 @@ class WSIDataset(Dataset):
 
 
 class DMINMIL:
-    """
-    层级式 cluster-aware MIL Runner
-    使用 Hierarchical MIL 模型 + label smoothing CE
-    """
     def __init__(self, args):
         self.args = args
 
@@ -128,7 +120,6 @@ class DMINMIL:
 
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=args.lr, weight_decay=args.wd)
 
-        # ======= CrossEntropy + Label Smoothing（更稳定）=======
         self.loss = torch.nn.CrossEntropyLoss(
             reduction='mean',
             label_smoothing=getattr(self.args, "label_smoothing", 0.0)
@@ -141,7 +132,6 @@ class DMINMIL:
         self.step = 0
         self.warmup_steps = 100
 
-    # ---------- 数据相关 ----------
     def read_wsi_label(self):
         data = pd.read_csv(self.args.label_csv)
         logging.info(f"Label CSV head:\n{data.head().to_string()}")
@@ -159,7 +149,6 @@ class DMINMIL:
                 case_id = data.loc[i, "case_id"]
                 slide_id = data.loc[i, "slide_id"]
                 label = data.loc[i, "label"]
-                # 其他数据集的 label 映射按需要自行扩展
 
             wsi_labels.append([case_id, slide_id, label])
 
@@ -205,10 +194,7 @@ class DMINMIL:
         return torch.DoubleTensor(weight)
 
     def init_data_wsi(self):
-        """
-        训练集 = train + valid
-        测试集 = test
-        """
+
         wsi_labels = self.read_wsi_label()
         split_csv = os.path.join(self.args.split_dir, f'splits_{self.args.k}.csv')
 
