@@ -1,0 +1,6 @@
+WSI_Name,Total_images,Num_clusters,Num_samples_selected,Feature_extraction_time(s),Clustering_time(s),Sampling_time(s),Overall_time(s),Date_time_processed,Additional_note
+WSI_5,500,23,109,14.72,4.32,0.33,19.37,2025-10-23 16:37:13 PDT,GPU:1
+WSI_1,600,25,132,14.21,4.97,0.39,19.58,2025-10-23 16:37:13 PDT,GPU:3
+WSI_2,600,25,130,13.28,5.94,0.42,19.64,2025-10-23 16:37:13 PDT,GPU:2
+WSI_3,600,25,144,14.3,4.74,0.4,19.43,2025-10-23 16:37:13 PDT,GPU:0
+WSI_4,500,23,119,13.86,4.9,0.35,19.12,2025-10-23 16:37:13 PDT,GPU:4
