@@ -1,31 +1,24 @@
- HEAD
-# HDMIL
-The official implementation of "Fast and Accurate Gigapixel Pathological Image Classification with Hierarchical Distillation Multi-Instance Learning"
+# TCAMIL
 
-## training &  testing
-#### step1: CLUSTER/DeepCluster-main
-```shell
+Official implementation of **TCAMIL** (cluster-aware hierarchical MIL for gigapixel pathological image classification).
 
-```
-#### step2: CLUSTER/DeepCluster-main
-```shell
+This repo implements a **3-stage pipeline**:
 
-```
+1) **Local clustering (per WSI)** → generates `cluster_assignments.csv` inside each WSI output folder  
+2) **Fold-wise global clustering (train+val fit, test predict)** → generates:
+   - `coord_to_global_cluster_trainval.pkl`
+   - `coord_to_global_cluster_test.pkl`
+3) **TCAMIL training/testing (final model: Only-Embedding)** → hierarchical MIL with:
+   - cluster-aware grouping
+   - intra-cluster attention pooling
+   - inter-cluster attention pooling
+   - **cluster embedding fusion enabled** (final setting)
 
+---
 
-### for Multiple Classification Tasks
-#### step1: CLUSTER
-```shell
+## 1) Environment
 
-```
-
-Updated on 2025年 09月 10日 星期三 21:43:57 CST
-
-
-
-
-
-sy/TCGA-BRAF/image/-------#图像数据
-
-sy/TCGA-BRAF/clinical.cart.2025-07-02/ --------#临床数据
-
+### 1.1 Create environment
+```bash
+conda create -n tcamil python=3.10 -y
+conda activate tcamil
