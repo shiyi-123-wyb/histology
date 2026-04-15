@@ -22,3 +22,7 @@ This repo implements a **3-stage pipeline**:
 ```bash
 conda create -n tcamil python=3.10 -y
 conda activate tcamil
+## 2) Environment
+
+### 1.1 Create environment
+```bash
