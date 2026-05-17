@@ -34,7 +34,6 @@ This project uses two colorectal cancer cohorts:
 - **Internal validation**: patient-level cross-validation within the Gansu cohort.
 - **External validation**: model trained on the Gansu cohort and tested on the independent SurGen cohort without retraining or fine-tuning.
 
-
 ## Local Clustering
 
 The within-slide local clustering step is implemented in `TCAMIL/DeepCluster-main`. The running script is:
@@ -64,3 +63,66 @@ args.store_plots = False
 ```
 
 Here, `args.input_path` indicates the folder containing WSI patch folders, `args.output_path` indicates the directory for saving local clustering outputs, and `args.feature_ext` specifies the feature extractor used for patch-level representation. The local clustering results generated in this step are used as the input for the subsequent global cluster alignment stage.
+
+## Global Clustering and TCAMIL Training
+
+After local clustering, TCAMIL performs global cluster alignment and MIL training using:
+
+```text
+TCAMIL/baseline.py
+```
+
+This script is the main entry for the TCAMIL training stage. It first calls:
+
+```text
+TCAMIL/clustering_pipeline.py
+```
+
+to align the within-slide local clusters into a shared global morphology-aware phenotype space. Then it calls:
+
+```text
+TCAMIL/DMIN.py
+```
+
+to train and evaluate the TCAMIL model. The hierarchical MIL model is implemented in:
+
+```text
+TCAMIL/models/hdmil.py
+```
+
+Before running this stage, users need to prepare the local clustering outputs, WSI-level feature files, label file, and cross-validation split files. The main parameters include:
+
+```bash
+--cluster_root   path/to/local_clustering_output
+--feature_dir    path/to/wsi_h5_features
+--label_csv      path/to/labels.csv
+--split_dir      path/to/splits
+--num_clusters   18
+--feature_dim    1536
+--k              0
+--phase          train
+```
+
+An example command is:
+
+```bash
+python TCAMIL/baseline.py \
+    --phase train \
+    --k 0 \
+    --cluster_root path/to/local_clustering_output \
+    --feature_dir path/to/wsi_h5_features \
+    --label_csv path/to/labels.csv \
+    --split_dir path/to/splits \
+    --num_clusters 18 \
+    --feature_dim 1536
+```
+
+For each fold, the global morphology vocabulary is fitted only using the local cluster prototypes from the training set. The test slides are not used to fit the global clusters. During testing, local cluster prototypes from test slides are only assigned to the learned global cluster centers. This design avoids information leakage from the test set while keeping all slides mapped to the same global phenotype space.
+
+The global cluster IDs are then used together with tile-level UNI2 features for TCAMIL training. Specifically, each tile is represented by both its discriminative feature and its aligned global cluster identity. TCAMIL first aggregates tiles within the same global phenotype group and then aggregates cluster-level representations for slide-level KRAS mutation prediction.
+
+The evaluation results are saved in the experiment directory, including:
+
+```text
+test_metrics.csv
+```
