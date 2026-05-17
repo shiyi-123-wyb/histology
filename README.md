@@ -4,87 +4,44 @@
 
 ## Overview
 
-TCAMIL is designed to model the histomorphological heterogeneity of colorectal cancer.  
-Instead of directly aggregating patch features, it first builds a **globally aligned phenotype space** through clustering, and then performs **cluster-aware hierarchical MIL aggregation** for slide-level prediction.
+TCAMIL is designed to model the histomorphological heterogeneity of colorectal cancer. Instead of directly aggregating patch features, it first constructs a **globally aligned morphology-aware phenotype space** through within-slide clustering and cross-slide alignment, and then performs **cluster-aware hierarchical MIL aggregation** for slide-level prediction.
+
+<p align="center">
+  <img src="figures/framework.png" width="95%">
+</p>
 
 ## Framework
 
 The main workflow of TCAMIL includes:
 
-1. **Tile extraction** from whole-slide images  
-2. **Feature extraction** for each tile  
-3. **CRC-specific clustering space construction** using an autoencoder  
-4. **Within-slide local clustering** and **cross-slide global alignment**  
-5. **Cluster-aware hierarchical MIL** for KRAS mutation prediction  
-6. **Interpretability analysis** based on attention and dominant phenotypes  
+1. **WSI tiling**: H&E whole-slide images are tessellated into non-overlapping image tiles.
+2. **Dual feature extraction**: AE-CRC extracts morphology-oriented features for clustering, while UNI2 extracts discriminative tile-level features for prediction.
+3. **Within-slide local clustering**: morphologically similar tiles within each WSI are grouped into local phenotype units.
+4. **Cross-slide global alignment**: local cluster prototypes from different WSIs are aligned into a shared global morphology-aware phenotype vocabulary.
+5. **Cluster-aware feature fusion**: globally aligned cluster identities are embedded and fused with tile-level discriminative features.
+6. **Hierarchical MIL prediction**: intra-cluster attention aggregates tiles within each phenotype unit, and inter-cluster attention aggregates cluster-level representations for final KRAS mutation prediction.
+7. **Interpretability analysis**: attention-dominant phenotypes and high-attention tissue regions are analysed to provide morphology-aware model interpretation.
 
 ## Dataset
 
 This project uses two colorectal cancer cohorts:
 
-- **Gansu cohort**: private cohort, 349 patients  
-- **SurGen cohort**: public Scottish cohort, 350 patients  
+- **Gansu cohort**: private cohort from Gansu Provincial People's Hospital, 349 patients.
+- **SurGen cohort**: publicly available Scottish colorectal cancer cohort, 350 patients.
 
-### Evaluation setting
+## Evaluation setting
 
-- **Train**: Gansu cohort  
-- **Test**: internal Gansu testing and external SurGen testing  
+- **Internal validation**: patient-level cross-validation within the Gansu cohort.
+- **External validation**: model trained on the Gansu cohort and tested on the independent SurGen cohort without retraining or fine-tuning.
 
 ## Repository structure
 
 ```text
 .
 ├── preprocessing/        # WSI preprocessing and tile extraction
-├── feature_extraction/   # patch-level feature extraction
-├── clustering/           # local clustering and global alignment
-├── mil/                  # TCAMIL model
+├── feature_extraction/   # tile-level feature extraction
+├── clustering/           # within-slide local clustering and cross-slide global alignment
+├── mil/                  # TCAMIL model and training scripts
 ├── evaluation/           # evaluation scripts
-├── figures/              # figures for README / manuscript
+├── figures/              # framework and manuscript figures
 └── README.md
-```
-
-## Installation
-
-```bash
-git clone https://github.com/your-repo/TCAMIL.git
-cd TCAMIL
-pip install -r requirements.txt
-```
-
-## Usage
-
-### 1. Preprocess WSIs
-
-```bash
-python preprocessing/extract_tiles.py
-```
-
-### 2. Extract features
-
-```bash
-python feature_extraction/extract_features.py
-```
-
-### 3. Perform clustering
-
-```bash
-python clustering/run_clustering.py
-```
-
-### 4. Train TCAMIL
-
-```bash
-python mil/train.py
-```
-
-### 5. Evaluate
-
-```bash
-python evaluation/test.py
-```
-
-## Notes
-
-- Please organise your WSI files and metadata before running the pipeline.
-- Update the data paths and configuration files according to your local environment.
-- The current framework is designed for CRC KRAS mutation prediction with H&E whole-slide images.
