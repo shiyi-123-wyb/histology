@@ -7,7 +7,7 @@
 TCAMIL is designed to model the histomorphological heterogeneity of colorectal cancer. Instead of directly aggregating patch features, it first constructs a **globally aligned morphology-aware phenotype space** through within-slide clustering and cross-slide alignment, and then performs **cluster-aware hierarchical MIL aggregation** for slide-level prediction.
 
 <p align="center">
-  <img src="figures/framework.png" width="95%">
+  <img src="TCAMIL.png" width="95%">
 </p>
 
 ## Framework
