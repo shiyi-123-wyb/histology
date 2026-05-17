@@ -7,7 +7,7 @@ import random
 import numpy as np
 import torch
 
-from DMIN_only_embedding import DMINMIL
+from DMIN import DMINMIL
 from clustering_pipeline import run_fold_clustering
 
 
