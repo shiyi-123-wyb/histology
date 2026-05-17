@@ -1,6 +1,6 @@
 # TCAMIL
 
-**TCAMIL (Two-Stage Clustering Aligned Multiple Instance Learning)** is a weakly supervised computational pathology framework for **KRAS mutation prediction** from colorectal cancer (CRC) H&E whole-slide images.
+**TCAMIL (Two-stage Cluster-aware Aligned Multiple Instance Learning)** is a weakly supervised computational pathology framework for **KRAS mutation prediction** from colorectal cancer (CRC) H&E whole-slide images.
 
 ## Overview
 
