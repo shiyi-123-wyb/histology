@@ -117,12 +117,10 @@ python TCAMIL/baseline.py \
     --feature_dim 1536
 ```
 
-For each fold, the global morphology vocabulary is fitted only using the local cluster prototypes from the training set. The test slides are not used to fit the global clusters. During testing, local cluster prototypes from test slides are only assigned to the learned global cluster centers. This design avoids information leakage from the test set while keeping all slides mapped to the same global phenotype space.
+For each fold, `baseline.py` first performs fold-specific global cluster alignment based on the local clustering results stored in `--cluster_root`. The global morphology vocabulary is fitted only on the training side of the current fold. The held-out test slides are not used to fit the global clusters; instead, their local cluster prototypes are assigned to the learned global cluster space during testing. This prevents information leakage while ensuring that both training and test slides are represented using the same global phenotype vocabulary.
 
-The global cluster IDs are then used together with tile-level UNI2 features for TCAMIL training. Specifically, each tile is represented by both its discriminative feature and its aligned global cluster identity. TCAMIL first aggregates tiles within the same global phenotype group and then aggregates cluster-level representations for slide-level KRAS mutation prediction.
+It should be noted that the features used for clustering and the features used for MIL prediction are stored separately. The local and global clustering stages use AE-CRC features from `--cluster_root` to obtain morphology-aware global cluster IDs. For TCAMIL training, the discriminative tile-level features are loaded from `--feature_dir`, where each WSI is stored as a `.h5` file containing `features` and `coords`. In our experiments, `--feature_dir` points to the UNI2 feature directory. To replace UNI2 with another feature extractor, users only need to replace the `.h5` feature directory and set the corresponding `--feature_dim`.
 
-The evaluation results are saved in the experiment directory, including:
+During MIL training, TCAMIL reads the UNI2 feature vector of each tile from the `.h5` file and uses the tile coordinates to retrieve its aligned global cluster ID from the generated coordinate-to-cluster mapping. Therefore, each tile is represented by two complementary inputs: its UNI2 discriminative feature and its global morphology-aware cluster identity. These two inputs are then fused in the hierarchical MIL model for slide-level KRAS mutation prediction.
 
-```text
-test_metrics.csv
-```
+
