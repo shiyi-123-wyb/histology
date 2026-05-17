@@ -34,14 +34,33 @@ This project uses two colorectal cancer cohorts:
 - **Internal validation**: patient-level cross-validation within the Gansu cohort.
 - **External validation**: model trained on the Gansu cohort and tested on the independent SurGen cohort without retraining or fine-tuning.
 
-## Repository structure
+
+## Local Clustering
+
+The within-slide local clustering step is implemented in `TCAMIL/DeepCluster-main`. The running script is:
 
 ```text
-.
-├── preprocessing/        # WSI preprocessing and tile extraction
-├── feature_extraction/   # tile-level feature extraction
-├── clustering/           # within-slide local clustering and cross-slide global alignment
-├── mil/                  # TCAMIL model and training scripts
-├── evaluation/           # evaluation scripts
-├── figures/              # framework and manuscript figures
-└── README.md
+TCAMIL/DeepCluster-main/run_clustering.py
+```
+
+This script is used to configure the input patch directory, output directory, feature extractor, GPU setting, and saving options. The detailed feature processing and local clustering procedure is implemented in:
+
+```text
+TCAMIL/DeepCluster-main/Clustering.py
+```
+
+Before running local clustering, users need to modify the following parameters in `run_clustering.py` according to their own dataset:
+
+```python
+args.input_path = 'path/to/patches_x20'
+args.output_path = 'path/to/local_clustering_output'
+args.feature_ext = 'ae_crc'
+args.gpu_ids = '0'
+args.batch_size = 128
+args.dim_reduce = 256
+args.store_features = True
+args.store_clusters = False
+args.store_plots = False
+```
+
+Here, `args.input_path` indicates the folder containing WSI patch folders, `args.output_path` indicates the directory for saving local clustering outputs, and `args.feature_ext` specifies the feature extractor used for patch-level representation. The local clustering results generated in this step are used as the input for the subsequent global cluster alignment stage.
